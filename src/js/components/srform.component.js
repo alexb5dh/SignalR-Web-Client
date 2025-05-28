@@ -69,6 +69,7 @@ class SrFormComponent extends HTMLElement {
                                     <option value="none">No Auth</option>
                                     <option value="query">Query String</option>
                                     <option value="header">Auth Header</option>
+                                    <option value="method">Method</option>
                                 </select>
                             </div>
                         </div>

@@ -10,6 +10,7 @@ class SignalRApp {
     }
 
     Init(options) {
+        this.options = options;
 
         var confguration = {};
         if(options.isTokenRequired === true) {
@@ -18,6 +19,9 @@ class SignalRApp {
                 confguration.headers = {
                     "Authorization": `Bearer ${options.getToken()}`
                 };
+            } else if (options.authMethod === 'method') {
+                // For method auth, we'll call Authenticate after connection
+                this.token = options.getToken();
             } else {
                 confguration.accessTokenFactory = () => options.getToken();
             }
@@ -66,6 +70,12 @@ class SignalRApp {
         self.connection.onreconnected((connectionId) => {
             AppEvents.emit('Logger', `Reconnected successfully`);
             console.log('On Reconnected...');
+            if (options.isTokenRequired && options.authMethod === 'method') {
+                self.connection.invoke("Authenticate", self.token)
+                    .catch(err => {
+                        AppEvents.emit('Logger', `Authentication failed after reconnection: ${err}`);
+                    });
+            }
         });
     }
     
@@ -74,6 +84,12 @@ class SignalRApp {
         var self = this;
         self.connection.start()
             .then(function (data) {
+                if (self.options.isTokenRequired && self.options.authMethod === 'method') {
+                    return self.connection.invoke("Authenticate", self.token)
+                        .then(() => {
+                            onSuccess({ url: self.url });
+                        });
+                }
                 onSuccess({ url: self.url });
             })
             .catch(function (err) {
