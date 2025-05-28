@@ -39,7 +39,7 @@ class SignalRApp {
         this.connection = new SignalR.HubConnectionBuilder()
             .withUrl(options.url, confguration)
             .configureLogging(SignalR.LogLevel.Information)
-            .withAutomaticReconnect([0, 3000, 5000, 10000, 15000, 30000])
+            .withAutomaticReconnect([0, 3000, 5000, ...Array(12).fill(10000)])
             .build();
 
         //Receive Data
