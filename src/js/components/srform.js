@@ -111,11 +111,12 @@ export function Init() {
     NotConnected();
     RigisterNavigationTabEvent();
 
-    document.getElementById('chk-req-token')
+    document.getElementById('auth-method')
         .addEventListener('change', (event) => {
-            if (event.target.checked) {
+            const authMethod = event.target.value;
+            if (authMethod !== 'none') {
                 document.getElementById('authHeader').disabled = false;
-                window.appLogic.EnableAuth();
+                window.appLogic.EnableAuth(authMethod);
             } else {
                 window.appLogic.DisableAuth();
                 document.getElementById('authHeader').disabled = true;
@@ -160,20 +161,18 @@ export function AdvanceViewElements(enable) {
         document.getElementById('content-negotiation').style = 'display:block';
         
         if (isConnected === true) {
-            document.getElementById('chk-req-token').disabled = true;
+            document.getElementById('auth-method').disabled = true;
             document.getElementById('authHeader').disabled = true;
             DisableMdlElement('protocol-support');
             DisableMdlElement('skip-negotiation');
-            DisableMdlElement('chk-req-token')
         }
         else {
-            document.getElementById('chk-req-token').disabled = false;
+            document.getElementById('auth-method').disabled = false;
             if (window.appLogic.IsAuthEnabled() === true) {
                 document.getElementById('authHeader').disabled = false;
             }
             EnableMdlElement('protocol-support');
             EnableMdlElement('skip-negotiation');
-            EnableMdlElement('chk-req-token')
         }
     }
     else {
@@ -528,20 +527,19 @@ function EnableMdlElement(className) {
 }
 
 function ValidateTokenTextBox() {
-    debugger;
-    var isTokenReq = document.getElementById('chk-req-token').checked;
-    var tokenTxtBox = document.getElementById('authHeader')
-    if(isTokenReq) {
+    const authMethod = document.getElementById('auth-method').value;
+    const tokenTxtBox = document.getElementById('authHeader');
+
+    if(authMethod !== 'none') {
         if(!TextboxValidation(tokenTxtBox, "Please enter the Token")) {
             AppCommon.AppEvents.emit('Logger', "Please enter the Token");
             return false;
         }
-    } 
+    }
     else {
         const errorElement = tokenTxtBox.nextElementSibling;
         errorElement.innerText = "";
         errorElement.className = "error";
-        
     }
     return true;
 }

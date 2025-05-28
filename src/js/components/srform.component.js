@@ -65,12 +65,11 @@ class SrFormComponent extends HTMLElement {
                                 <span class="error" aria-live="polite"></span>
                             </div>
                             <div class="col-sm-2">
-                                <div class="form-check form-check-inline">
-                                    <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="chk-req-token">
-                                        <input type="checkbox" id="chk-req-token" class="mdl-checkbox__input chk-req-token" />
-                                        <span class="mdl-checkbox__label chk-text">Token Required</span>
-                                    </label>
-                                </div>
+                                <select class="form-control" id="auth-method">
+                                    <option value="none">No Auth</option>
+                                    <option value="query">Query String</option>
+                                    <option value="header">Auth Header</option>
+                                </select>
                             </div>
                         </div>
                     </div>

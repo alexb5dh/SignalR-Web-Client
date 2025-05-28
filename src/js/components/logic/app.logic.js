@@ -5,17 +5,18 @@ class AppLogic {
 
     constructor() {
         this.isTokenRequired = false;
+        this.authMethod = 'none';
         this.isBasicView = true;
     }
 
     Init(options) {
-
         if(this.isBasicView !== true && this.isTokenRequired === true) {
-            //adding new property to options object
             options["isTokenRequired"] = true;
+            options["authMethod"] = this.authMethod;
         } 
         else {
             options["isTokenRequired"] = false;
+            options["authMethod"] = 'none';
         }
         
         sr = new appSignalR.SignalRApp(options.url);
@@ -38,12 +39,14 @@ class AppLogic {
         sr.OnDisconnect(onSuccess, onError);
     }
 
-    EnableAuth() {
+    EnableAuth(method) {
         this.isTokenRequired = true;
+        this.authMethod = method;
     }
 
     DisableAuth() {
         this.isTokenRequired = false;
+        this.authMethod = 'none';
     }
 
     IsAuthEnabled() {

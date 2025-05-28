@@ -13,8 +13,14 @@ class SignalRApp {
 
         var confguration = {};
         if(options.isTokenRequired === true) {
-           // options.skipNegotiation = true;
-           confguration.accessTokenFactory = () => options.getToken();
+            console.log(options.authMethod);
+            if (options.authMethod === 'header') {
+                confguration.headers = {
+                    "Authorization": `Bearer ${options.getToken()}`
+                };
+            } else {
+                confguration.accessTokenFactory = () => options.getToken();
+            }
         }
 
         switch(options.transportType) {
