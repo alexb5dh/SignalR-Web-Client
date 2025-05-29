@@ -22,8 +22,37 @@ class SignalRApp {
             } else if (options.authMethod === 'method') {
                 // For method auth, we'll call Authenticate after connection
                 this.token = options.getToken();
-            } else {
+            } else if (options.authMethod === 'query') {
                 confguration.accessTokenFactory = () => options.getToken();
+            } else {
+                // For token auth, we'll fetch token from the endpoint
+                const hubUrl = new URL(options.url);
+                const tokenEndpoint = `${hubUrl.origin}/connection/token`;
+
+                confguration.accessTokenFactory = async () => {
+                    try {
+                        const response = await fetch(tokenEndpoint, {
+                            method: 'GET',
+                            headers: {
+                                'Authorization': `Bearer ${options.getToken()}`
+                            }
+                        });
+
+                        if (!response.ok) {
+                            throw new Error(`Token endpoint returned ${response.status}: ${response.statusText}`);
+                        }
+
+                        const data = await response.json();
+                        if (!data.token) {
+                            throw new Error('Token endpoint response does not contain token');
+                        }
+
+                        return data.token;
+                    } catch (error) {
+                        AppEvents.emit('Logger', `Failed to fetch token: ${error.message}`);
+                        throw error;
+                    }
+                };
             }
         }
 
