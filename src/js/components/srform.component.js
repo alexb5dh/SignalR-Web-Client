@@ -79,65 +79,28 @@ class SrFormComponent extends HTMLElement {
                     <div class="form-group onconnect scale-in-ver-top" ${divStyle} id="protocol-support">
                         <div class="row">
                             <div class="col-sm-2">
-                                <label class="col-form-label label-title">Transport Type</label>
+                                <label for="transport-type" class="col-form-label label-title">Transport Type</label>
                             </div>
-                            <div class="col-sm-10">
-                                <div class="form-check form-check-inline">
-                                    <!--
-                                        <input type="checkbox" id="chk-ws" class="form-check-input protocol-support" value="ws" checked/>
-                                            <label class="form-check-label" for="chk-ws">
-                                            WebSocket
-                                        </label>
-                                    -->
-                                    <!--
-                                        <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="chk-ws">
-                                            <input type="checkbox" id="chk-ws" class="mdl-checkbox__input protocol-support" value="ws" checked />
-                                            <span class="mdl-checkbox__label chk-text">WebSocket</span>
-                                        </label>
-                                    -->
-                                    
-                                    <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="chk-ws">
-                                        <input type="radio" id="chk-ws" class="mdl-radio__button protocol-support" name="transportType" value="ws" checked>
-                                        <span class="mdl-radio__label">WebSocket</span>
-                                    </label>
-                                </div>
-                                <div class="form-check form-check-inline">
-                                <!--
-                                    <input type="checkbox" id="chk-lp" class="form-check-input protocol-support" disabled checked value="lp" />
-                                        <label class="form-check-label" for="chk-lp">
-                                        Long Pooling
-                                    </label>
-                                -->
-                                <!--
-                                    <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="chk-lp">
-                                        <input type="checkbox" id="chk-lp" class="mdl-checkbox__input protocol-support" disabled checked value="lp" />
-                                        <span class="mdl-checkbox__label chk-text">Long Polling</span>
-                                    </label>
-                                -->
+                            <div class="col-sm-8">
+                                <select class="form-control" id="transport-type">
+                                    <option value="ws">WebSockets</option>
+                                    <option value="lp">LongPolling</option>
+                                    <option value="sse">ServerSentEvents</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
 
-                                    <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="chk-lp">
-                                        <input type="radio" id="chk-lp" class="mdl-radio__button protocol-support" name="transportType"  value="lp">
-                                        <span class="mdl-radio__label">Long Polling</span>
-                                    </label>
-                                </div>
-                                <div class="form-check form-check-inline">
-                                <!--
-                                    <input type="checkbox" id="chk-sse"  class="form-check-input protocol-support" value="sse" />
-                                        <label class="form-check-label" for="chk-sse">
-                                            Server Send Event
-                                    </label>
-                                -->
-                                <!--
-                                    <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="chk-sse">
-                                        <input type="checkbox" id="chk-sse" class="mdl-checkbox__input protocol-support" checked value="sse" />
-                                        <span class="mdl-checkbox__label chk-text">Server Send Event</span>
-                                    </label>
-                                -->
-                                    <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="chk-sse">
-                                        <input type="radio" id="chk-sse" class="mdl-radio__button protocol-support" name="transportType" value="sse">
-                                        <span class="mdl-radio__label">Server Send Event</span>
-                                    </label>
-                                </div>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-sm-2">
+                                <label for="serialization-type" class="col-form-label label-title">Serialization Type</label>
+                            </div>
+                            <div class="col-sm-8">
+                                <select class="form-control" id="serialization-type">
+                                    <option value="json">JSON</option>
+                                    <option value="messagepack">MessagePack</option>
+                                </select>
                             </div>
                         </div>
                     </div>

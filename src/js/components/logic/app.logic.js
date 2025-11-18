@@ -7,16 +7,19 @@ class AppLogic {
         this.isTokenRequired = false;
         this.authMethod = 'none';
         this.isBasicView = true;
+        this.serializationType = 'json';
     }
 
     Init(options) {
         if(this.isBasicView !== true && this.isTokenRequired === true) {
             options["isTokenRequired"] = true;
             options["authMethod"] = this.authMethod;
+            options["serializationType"] = this.serializationType || 'json';
         } 
         else {
             options["isTokenRequired"] = false;
             options["authMethod"] = 'none';
+            options["serializationType"] = this.serializationType || 'json';
         }
         
         sr = new appSignalR.SignalRApp(options.url);
@@ -63,6 +66,10 @@ class AppLogic {
 
     SetCurrentViewAsAdvance() {
         this.isBasicView = false;
+    }
+
+    SetSerializationType(type) {
+        this.serializationType = type;
     }
 }
 

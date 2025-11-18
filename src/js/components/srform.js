@@ -3,6 +3,7 @@ import notificationSound from '../../assets/Notification.wav';
 import { AppLogic } from './logic/app.logic';
 import * as AppCommon from './logic/lib/app.common';
 import * as Dialogbox from '../components/dialogbox/custompopup';
+import { SettingsManager } from './logic/lib/app.settings';
 
 var isConnected = false;
 var transportType = "ws";
@@ -25,6 +26,19 @@ AppCommon.AppEvents.on('OnDisconnected', () => {
 
 export function Init() {
     window.appLogic = new AppLogic();
+    
+    // Load and apply saved settings with a small delay to ensure DOM is ready
+    setTimeout(() => {
+        const savedSettings = SettingsManager.loadSettings();
+        SettingsManager.applySettingsToUI(savedSettings);
+        
+        // Update internal application state based on restored settings
+        updateInternalStateFromSettings(savedSettings);
+    }, 50);
+    
+    // Enable auto-save for settings changes
+    SettingsManager.enableAutoSave();
+    
     //Connect Button Events
     document.getElementById('btn-connect')
         .addEventListener('click',
@@ -81,8 +95,10 @@ export function Init() {
     muteNotifcationElement.addEventListener('change', (event) => {
         if (event.target.checked) {
             window.localStorage.setItem('muteNotification', 1);
+            SettingsManager.saveSetting('muteNotification', true);
         } else {
             window.localStorage.setItem('muteNotification', 0);
+            SettingsManager.saveSetting('muteNotification', false);
         }
     });
 
@@ -123,6 +139,17 @@ export function Init() {
             }
         });
 
+    document.getElementById('serialization-type')
+        .addEventListener('change', (event) => {
+            window.appLogic.SetSerializationType(event.target.value);
+        });
+
+    // Transport type changes
+    document.getElementById('transport-type')
+        .addEventListener('change', (event) => {
+            transportType = event.target.value;
+        });
+
 }
 
 export function RigisterNavigationTabEvent() {
@@ -131,7 +158,10 @@ export function RigisterNavigationTabEvent() {
     for (var i = 0; i < navLinkClass.length; i++) {
         navLinkClass[i].addEventListener('click',
             function () {
-                OnTabChange(this.getAttribute('data-tab-type'));
+                const tabType = this.getAttribute('data-tab-type');
+                OnTabChange(tabType);
+                // Save the view mode setting
+                SettingsManager.saveSetting('viewMode', tabType);
             },
             false);
     }
@@ -542,4 +572,55 @@ function ValidateTokenTextBox() {
         errorElement.className = "error";
     }
     return true;
+}
+
+/**
+ * Update internal application state based on restored settings
+ */
+function updateInternalStateFromSettings(settings) {
+    console.log('Updating internal state from settings:', settings);
+    
+    // Update transport type
+    if (settings.transportType) {
+        transportType = settings.transportType;
+        console.log('Updated transportType to:', transportType);
+    }
+    
+    // Update skip negotiation
+    if (settings.skipNegotiation !== undefined) {
+        skipNegotiation = settings.skipNegotiation;
+        console.log('Updated skipNegotiation to:', skipNegotiation);
+    }
+    
+    // Update app logic serialization type
+    if (settings.serializationType) {
+        window.appLogic.SetSerializationType(settings.serializationType);
+        console.log('Updated serialization type to:', settings.serializationType);
+    }
+    
+    // Update app logic auth state
+    if (settings.authMethod && settings.authMethod !== 'none') {
+        window.appLogic.EnableAuth(settings.authMethod);
+        console.log('Enabled auth with method:', settings.authMethod);
+    } else {
+        window.appLogic.DisableAuth();
+        console.log('Disabled auth');
+    }
+    
+    // Update view mode in app logic
+    if (settings.viewMode === 'advance') {
+        window.appLogic.SetCurrentViewAsAdvance();
+        console.log('Set view mode to advance');
+        // Trigger the tab change to update the UI
+        setTimeout(() => {
+            const advanceTab = document.querySelector('[data-tab-type="advance"]');
+            if (advanceTab) {
+                advanceTab.click();
+                console.log('Clicked advance tab');
+            }
+        }, 100); // Small delay to ensure DOM is ready
+    } else {
+        window.appLogic.SetCurrentViewAsBasic();
+        console.log('Set view mode to basic');
+    }
 }

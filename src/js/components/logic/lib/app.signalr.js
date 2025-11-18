@@ -1,4 +1,5 @@
 import * as SignalR from "@microsoft/signalr";
+import { MessagePackHubProtocol } from "@microsoft/signalr-protocol-msgpack";
 import { AppEvents } from './app.common';
 
 class SignalRApp {
@@ -75,14 +76,19 @@ class SignalRApp {
             confguration.skipNegotiation = options.skipNegotiation;
         }
                 
-        this.connection = new SignalR.HubConnectionBuilder()
+        let builder = new SignalR.HubConnectionBuilder()
             .withUrl(options.url, confguration)
             .configureLogging(SignalR.LogLevel.Information)
-            .withAutomaticReconnect([0, 3000, 5000, ...Array(30).fill(10000)])
-            .build();
+            .withAutomaticReconnect([0, 3000, 5000, ...Array(30).fill(10000)]);
 
-        //Receive Data
-        //Reading the raw response
+
+        if (options.serializationType === 'messagepack') {
+            console.log('Using MessagePack protocol');
+            builder = builder.withHubProtocol(new MessagePackHubProtocol());
+        }
+
+        this.connection = builder.build();
+
         var self = this;
         self.processResponse = self.connection.processIncomingData;
 
