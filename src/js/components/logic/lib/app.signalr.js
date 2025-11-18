@@ -91,10 +91,20 @@ class SignalRApp {
 
         var self = this;
         self.processResponse = self.connection.processIncomingData;
+        self.invokeClientMethod = self.connection.invokeClientMethod;
 
         self.connection.processIncomingData = function (data) {
             self.processResponse.call(self.connection, data);
-            self.HandleResponse(data);
+            //self.HandleResponse(data);
+        }
+
+        self.connection.invokeClientMethod = function(input){
+            AppEvents.emit('Logger', JSON.stringify(input));
+            self.invokeClientMethod.call(self.connection, input);
+
+            if (input.target) {
+                AppEvents.emit('ReceivedData', { "ClientMethod": input.target, "Data": input.arguments });
+            }
         }
 
         self.connection.onreconnecting((error) => {
@@ -174,9 +184,9 @@ class SignalRApp {
     ParseRespose(input) {
 
         if (typeof input !== "string") {
-            console.log("Invalid input for JSON hub protocol. Expected a string.");
-            return null; 
+            //console.log("Invalid input for JSON hub protocol. Expected a string.");
             //throw new Error("Invalid input for JSON hub protocol. Expected a string.");
+            return null; 
         }
 
         var separator = String.fromCharCode(0x1e);
